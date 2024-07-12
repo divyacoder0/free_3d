@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Cube Game with Starry Background</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            perspective: 1000px;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        }
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        #cube {
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-style: preserve-3d;
+            transform: translate(-50%, -50%);
+            animation: rotate 20s infinite linear;
+        }
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .face:hover { opacity: 1; }
+        #front { transform: translateZ(100px); background-color: rgba(255, 65, 54, 0.7); }
+        #back { transform: translateZ(-100px) rotateY(180deg); background-color: rgba(0, 116, 217, 0.7); }
+        #right { transform: translateX(100px) rotateY(90deg); background-color: rgba(46, 204, 64, 0.7); }
+        #left { transform: translateX(-100px) rotateY(-90deg); background-color: rgba(255, 220, 0, 0.7); }
+        #top { transform: translateY(-100px) rotateX(90deg); background-color: rgba(177, 13, 201, 0.7); }
+        #bottom { transform: translateY(100px) rotateX(-90deg); background-color: rgba(255, 133, 27, 0.7); }
+
+        @keyframes rotate {
+            0% { transform: translate(-50%, -50%) rotateX(0) rotateY(0); }
+            100% { transform: translate(-50%, -50%) rotateX(360deg) rotateY(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="cube">
+            <div class="face" id="front">Front</div>
+            <div class="face" id="back">Back</div>
+            <div class="face" id="right">Right</div>
+            <div class="face" id="left">Left</div>
+            <div class="face" id="top">Top</div>
+            <div class="face" id="bottom">Bottom</div>
+        </div>
+    </div>
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const cube = document.getElementById('cube');
+
+        // Create stars
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = `${Math.random() * 3}px`;
+            star.style.height = star.style.width;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+            gameContainer.appendChild(star);
+        }
+
+        let isMouseDown = false;
+        let startX, startY;
+        let rotateX = 0;
+        let rotateY = 0;
+
+        cube.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            cube.style.animation = 'none';
+        });
+
+        document.addEventListener('mouseup', () => {
+            isMouseDown = false;
+            cube.style.animation = 'rotate 20s infinite linear';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isMouseDown) {
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                
+                rotateY += deltaX * 0.5;
+                rotateX -= deltaY * 0.5;
+                
+                cube.style.transform = `translate(-50%, -50%) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                
+                startX = e.clientX;
+                startY = e.clientY;
+            }
+        });
+    </script>
+</body>
+</html>
